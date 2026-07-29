@@ -387,7 +387,7 @@ Tests are located inside the `tests/` directory.
 
 Contributions are always welcome.
 
-Please read **CONTRIBUTING.md** before opening an issue or submitting a pull request. All framework changes are reviewed before being merged.
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening an issue or submitting a pull request. All framework changes are reviewed before being merged.
 
 ---
 
