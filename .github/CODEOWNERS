@@ -1,0 +1,43 @@
+# CODEOWNERS for GlassBoxDL
+#
+# Each line maps a path pattern to the GitHub username(s) responsible for
+# reviewing changes to it. GitHub auto-requests these reviewers on any PR
+# that touches matching files. More specific rules further down override
+# earlier, broader ones.
+#
+# Replace the placeholder @handles below with actual GitHub usernames.
+
+# Default owner — falls back to the maintainer for anything not matched below
+*                                       @Hogwarts-coder10
+
+# --- Core framework: architecture, Tensor, Module, Sequential, serialization ---
+/glassboxdl/core/                      @Hogwarts-coder10
+/glassboxdl/layers/                    @Hogwarts-coder10
+/glassboxdl/models/                    @Hogwarts-coder10
+
+# --- Data: dataset handling, preprocessing, augmentation, configs ---
+/glassboxdl/preprocessing/             @sumera-handle
+/examples/image_segmentation/data/     @sumera-handle
+/examples/image_segmentation/configs/  @sumera-handle
+
+# --- Training: training loop, metrics, visualization, experiments, results ---
+/glassboxdl/training/                  @riddhi-handle
+/glassboxdl/metrics/                   @riddhi-handle
+/glassboxdl/visualization/             @riddhi-handle
+/examples/image_segmentation/experiments/  @riddhi-handle
+/examples/image_segmentation/results/  @riddhi-handle
+
+# --- Docs, examples, tests, benchmarks, reports ---
+/docs/                                 @archit-handle
+/examples/                             @archit-handle
+/tests/                                @archit-handle
+/benchmarks/                           @archit-handle
+/examples/image_segmentation/report/   @archit-handle
+/examples/image_segmentation/reviews/  @archit-handle
+
+# --- Root-level project files: maintainer review on anything structural ---
+/README.md                             @Hogwarts-coder10
+/CONTRIBUTING.md                       @Hogwarts-coder10
+/CODE_OF_CONDUCT.md                    @Hogwarts-coder10
+/pyproject.toml                        @Hogwarts-coder10
+
