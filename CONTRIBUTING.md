@@ -294,6 +294,8 @@ Please be respectful and constructive when interacting with other contributors.
 
 Healthy discussions, questions, and feedback are encouraged.
 
+For community expectations, please read the project's **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)**.
+
 ---
 
 # Thank You
