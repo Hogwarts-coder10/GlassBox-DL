@@ -21,11 +21,11 @@
 /examples/image_segmentation/configs/  @sumera-handle
 
 # --- Training: training loop, metrics, visualization, experiments, results ---
-/glassboxdl/training/                  @riddhi-handle
-/glassboxdl/metrics/                   @riddhi-handle
-/glassboxdl/visualization/             @riddhi-handle
-/examples/image_segmentation/experiments/  @riddhi-handle
-/examples/image_segmentation/results/  @riddhi-handle
+/glassboxdl/training/                  @Riddhi-Pundhir
+/glassboxdl/metrics/                   @Riddhi-Pundhir
+/glassboxdl/visualization/             @Riddhi-Pundhir
+/examples/image_segmentation/experiments/  @Riddhi-Pundhir
+/examples/image_segmentation/results/  @Riddhi-Pundhir
 
 # --- Docs, examples, tests, benchmarks, reports ---
 /docs/                                 @archit-handle
