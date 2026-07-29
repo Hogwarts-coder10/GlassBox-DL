@@ -28,12 +28,12 @@
 /examples/image_segmentation/results/  @Riddhi-Pundhir
 
 # --- Docs, examples, tests, benchmarks, reports ---
-/docs/                                 @archit-handle
-/examples/                             @archit-handle
-/tests/                                @archit-handle
-/benchmarks/                           @archit-handle
-/examples/image_segmentation/report/   @archit-handle
-/examples/image_segmentation/reviews/  @archit-handle
+/docs/                                 @ARCHIT-coder08
+/examples/                             @ARCHIT-coder08
+/tests/                                @ARCHIT-coder08
+/benchmarks/                           @ARCHIT-coder08
+/examples/image_segmentation/report/   @ARCHIT-coder08
+/examples/image_segmentation/reviews/  @ARCHIT-coder08
 
 # --- Root-level project files: maintainer review on anything structural ---
 /README.md                             @Hogwarts-coder10
