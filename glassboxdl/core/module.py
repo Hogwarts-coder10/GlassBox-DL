@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 
-# We import Tensor for type checking, but do it safely to avoid circular imports later
-from glassboxdl.core.tensor import Tensor
+from glassboxdl.core.parameter import Parameter
 
 
 class Module(ABC):
@@ -32,8 +31,8 @@ class Module(ABC):
         if isinstance(value, Module):
             self._modules[name] = value
 
-        # Automatically register parameters
-        elif isinstance(value, Tensor) and value.requires_grad:
+        # Automatically register explicit parameters
+        elif isinstance(value, Parameter):
             self._parameters[name] = value
 
         # Standard attribute assignment
@@ -90,11 +89,62 @@ class Module(ABC):
                 param.grad.fill(0.0)
 
     # --- Serialization ---
+    # --- Parameter & Module Management (Add this new method) ---
+
+    def named_parameters(self, prefix=""):
+        """
+        Recursively yields (name, parameter) tuples for all parameters.
+        This creates hierarchical names like 'fc1.weight' for state_dicts.
+        """
+        # Yield direct parameters of this module
+        for name, param in self._parameters.items():
+            yield prefix + name, param
+
+        # Recursively yield parameters of sub-modules
+        for module_name, module in self._modules.items():
+            sub_prefix = prefix + module_name + "."
+            yield from module.named_parameters(prefix=sub_prefix)
 
     def state_dict(self):
-        """Returns a dictionary containing a whole state of the module."""
-        raise NotImplementedError("state_dict() is not yet implemented.")
+        """
+        Returns an OrderedDict containing the whole state of the module.
+        Extracts the pure NumPy arrays to ensure safe and clean serialization.
+        """
+        from collections import OrderedDict
 
-    def load_state_dict(self, state_dict):
-        """Copies parameters and buffers from state_dict into this module."""
-        raise NotImplementedError("load_state_dict() is not yet implemented.")
+        state = OrderedDict()
+        for name, param in self.named_parameters():
+            # Store a copy of the pure NumPy array, not the Parameter object
+            state[name] = param.numpy()
+        return state
+
+    def load_state_dict(self, state_dict, strict=True):
+        """
+        Copies parameters from a state_dict into this module's parameters.
+
+        Args:
+            state_dict (dict): A dictionary containing parameters (NumPy arrays).
+            strict (bool): If True, strictly enforces that the keys in state_dict
+                            match the keys returned by this module's state_dict().
+        """
+        own_state = self.state_dict()
+
+        for name, param in self.named_parameters():
+            if name in state_dict:
+                saved_array = state_dict[name]
+                # Validate shapes to prevent silent broadcasting bugs
+                if param.shape != saved_array.shape:
+                    raise ValueError(
+                        f"Shape mismatch for {name}: expected {param.shape}, got {saved_array.shape}"
+                    )
+
+                # Overwrite the underlying NumPy data in-place
+                param.data = saved_array.copy()
+            elif strict:
+                raise KeyError(f"Missing key in state_dict: '{name}'")
+
+        if strict:
+            # Check for unexpected keys in the loaded state_dict
+            unexpected_keys = set(state_dict.keys()) - set(own_state.keys())
+            if unexpected_keys:
+                raise KeyError(f"Unexpected key(s) in state_dict: {unexpected_keys}")
