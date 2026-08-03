@@ -16,9 +16,9 @@
 /glassboxdl/models/                    @Hogwarts-coder10
 
 # --- Data: dataset handling, preprocessing, augmentation, configs ---
-/glassboxdl/preprocessing/             sumiew06
-/examples/image_segmentation/data/     sumiew06
-/examples/image_segmentation/configs/ sumiew06
+/glassboxdl/preprocessing/             @sumiew06
+/examples/image_segmentation/data/     @sumiew06
+/examples/image_segmentation/configs/ @sumiew06
 
 
 # --- Training: training loop, metrics, visualization, experiments, results ---
