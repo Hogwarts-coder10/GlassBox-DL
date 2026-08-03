@@ -221,3 +221,24 @@ class Tensor:
         from glassboxdl.core.autograd import backward as autograd_backward
 
         autograd_backward(self)
+
+    def reshape(self, *shape):
+        """
+        Reshapes the tensor while tracking gradients.
+        """
+
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+
+        out = Tensor(self.data.reshape(*shape), _children=(self,))
+        out.requires_grad = self.requires_grad
+
+        if out.requires_grad:
+            out.grad = np.zeros_like(out.data, dtype=float)
+
+        def _backward():
+            if self.requires_grad and out.grad is not None:
+                self.grad += out.grad.reshape(self.shape)
+
+        out._backward = _backward
+        return out
