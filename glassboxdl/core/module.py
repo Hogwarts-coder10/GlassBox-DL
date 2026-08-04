@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import OrderedDict
+from typing import Any
 
 from glassboxdl.core.parameter import Parameter
 
@@ -39,9 +40,13 @@ class Module(ABC):
         super().__setattr__(name, value)
 
     @abstractmethod
-    def forward(self, *inputs, **kwargs):
-        """Defines the computation performed at every call."""
-        pass
+    def forward(self, *inputs, **kwargs) -> Any:
+        """
+        Defines the computation performed at every call.
+        Should be overridden by all subclasses.
+        """
+
+        raise NotImplementedError("Subclasses must immplement the forward method")
 
     def __call__(self, *inputs, **kwargs):
         """Allows the module to be called like a function."""
