@@ -242,3 +242,23 @@ class Tensor:
 
         out._backward = _backward
         return out
+
+    def sum(self):
+        """
+        Computes the sum of all elements in the tensor.
+        """
+
+        out = Tensor(np.sum(self.data), _children=(self,))
+        out.requires_grad = self.requires_grad
+
+        if out.requires_grad:
+            out.grad = np.zeros_like(out.data, dtype=float)
+
+        def _backward():
+            if self.requires_grad and out.grad is not None:
+                # The upstream gradient (out.grad) is a scalar.
+                # We broadcast it across a matrix of ones shaped like the input.
+                self.grad += out.grad * np.ones_like(self.data)
+
+        out._backward = _backward
+        return out
