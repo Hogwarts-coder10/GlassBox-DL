@@ -18,7 +18,7 @@ class Tanh(Module):
         super().__init__()
 
     def forward(self, x: Any, **kwargs: Any) -> Any:
-        out_data = np.tanh(x)
+        out_data = np.tanh(x.data)
 
         out = Tensor(out_data, _children=(x,))
         out.requires_grad = x.requires_grad
