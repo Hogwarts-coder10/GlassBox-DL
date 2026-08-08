@@ -153,3 +153,24 @@ class Module(ABC):
             unexpected_keys = set(state_dict.keys()) - set(own_state.keys())
             if unexpected_keys:
                 raise KeyError(f"Unexpected key(s) in state_dict: {unexpected_keys}")
+
+    def __repr__(self):
+        """
+        Creates a clean string representation of the module, hiding the full package path.
+        """
+        # Get just the class name (e.g., 'Linear', 'Conv2D') instead of the full path
+        name = self.__class__.__name__
+
+        # If the module has sub-modules (like your Sequential container), print them nicely
+        if hasattr(self, "_modules") and len(self._modules) > 0:
+            lines = [f"{name}("]
+            for key, module in self._modules.items():
+                # Recursively format child modules and indent them
+                mod_str = repr(module)
+                mod_str = "\n  ".join(mod_str.split("\n"))
+                lines.append(f"  ({key}): {mod_str}")
+            lines.append(")")
+            return "\n".join(lines)
+
+        # For base layers, just return the name
+        return f"{name}()"
