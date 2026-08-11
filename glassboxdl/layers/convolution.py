@@ -4,6 +4,7 @@ from typing import Any
 import numpy as np
 
 from glassboxdl.core.module import Module
+from glassboxdl.core.parameter import Parameter
 from glassboxdl.core.tensor import Tensor
 from glassboxdl.utils.convolution.naive import conv2d_naive, conv2d_naive_backward
 
@@ -44,10 +45,10 @@ class Conv2D(Module):
             bound,
             (out_channels, in_channels, self.kernel_size[0], self.kernel_size[1]),
         )
-        self.weight = Tensor(weight_data, requires_grad=True)
+        self.weight = Parameter(weight_data, requires_grad=True)
 
         bias_data = np.random.uniform(-bound, bound, out_channels)
-        self.bias = Tensor(bias_data, requires_grad=True)
+        self.bias = Parameter(bias_data, requires_grad=True)
 
     def forward(self, x: Any, **kwargs: Any) -> Any:
         if self.algorithm == "naive":
