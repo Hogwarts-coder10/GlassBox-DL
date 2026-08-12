@@ -99,4 +99,5 @@ class UNetPlusPlus:
         return self.out_activation(out) if self.out_activation else out
 
     def parameters(self) -> Generator[Tensor, None, None]:
-        yield from self.parameters()
+        for mod in self.modules:
+            yield from mod.parameters()

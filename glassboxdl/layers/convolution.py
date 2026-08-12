@@ -1,11 +1,12 @@
 import numpy as np
 
+from glassboxdl.core.module import Module
 from glassboxdl.core.parameter import Parameter
 from glassboxdl.core.tensor import Tensor
 from glassboxdl.utils.convolution.im2col import col2im_indices, im2col_indices
 
 
-class Conv2D:
+class Conv2D(Module):
     """
     High-Speed Convolutional Layer supporting multiple execution algorithms
     via an O(1) dispatch table.
