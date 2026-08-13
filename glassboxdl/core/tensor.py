@@ -262,3 +262,37 @@ class Tensor:
 
         out._backward = _backward
         return out
+
+    def concat(self, other: "Tensor", axis: int = 1) -> "Tensor":
+        """
+        Concatenates this tensor with another tensor along the specified axis.
+        Crucial for U-Net skip connections.
+        """
+        import numpy as np
+
+        # 1. Forward Pass: Concatenate the underlying numpy arrays
+        result_data = np.concatenate((self.data, other.data), axis=axis)
+        requires_grad = self.requires_grad or other.requires_grad
+
+        out = Tensor(result_data, requires_grad=requires_grad)
+
+        # 2. Backward Pass: Split the gradients back to the original tensors
+        def _backward():
+            if out.grad is None:
+                return
+
+            # Find the split index based on the size of the first tensor
+            split_idx = [self.data.shape[axis]]
+
+            # Split the gradient along the same axis we concatenated on
+            grads = np.split(out.grad, split_idx, axis=axis)
+
+            if self.requires_grad:
+                self.grad = self.grad + grads[0] if self.grad is not None else grads[0]
+            if other.requires_grad:
+                other.grad = (
+                    other.grad + grads[1] if other.grad is not None else grads[1]
+                )
+
+        out._backward = _backward
+        return out
