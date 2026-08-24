@@ -9,14 +9,16 @@ def get_im2col_indices(x_shape, field_height, field_width, padding=1, stride=1):
     out_height = int((H + 2 * padding - field_height) / stride + 1)
     out_width = int((W + 2 * padding - field_width) / stride + 1)
 
-    i0 = np.repeat(np.arange(field_height), field_width)
+    i0 = np.repeat(np.arange(field_height, dtype=np.int32), field_width)
     i0 = np.tile(i0, C)
-    i1 = stride * np.repeat(np.arange(out_height), out_width)
-    j0 = np.tile(np.arange(field_width), field_height * C)
-    j1 = stride * np.tile(np.arange(out_width), out_height)
+    i1 = stride * np.repeat(np.arange(out_height, dtype=np.int32), out_width)
+    j0 = np.tile(np.arange(field_width, dtype=np.int32), field_height * C)
+    j1 = stride * np.tile(np.arange(out_width, dtype=np.int32), out_height)
     i = i0.reshape(-1, 1) + i1.reshape(1, -1)
     j = j0.reshape(-1, 1) + j1.reshape(1, -1)
-    k = np.repeat(np.arange(C), field_height * field_width).reshape(-1, 1)
+    k = np.repeat(np.arange(C, dtype=np.int32), field_height * field_width).reshape(
+        -1, 1
+    )
 
     return k, i, j
 

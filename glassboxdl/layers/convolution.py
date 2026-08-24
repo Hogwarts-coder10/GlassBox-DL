@@ -45,8 +45,9 @@ class Conv2D(Module):
         scale = np.sqrt(2.0 / (in_channels * kernel_size * kernel_size))
         weight_data = (
             np.random.randn(out_channels, in_channels, kernel_size, kernel_size) * scale
-        )
-        bias_data = np.zeros((out_channels, 1))
+        ).astype(np.float32)
+
+        bias_data = np.zeros((out_channels, 1)).astype(np.float32)
 
         # Wrapped in the custom Parameter class so the optimizer updates them!
         self.weight = Parameter(weight_data, requires_grad=True)
