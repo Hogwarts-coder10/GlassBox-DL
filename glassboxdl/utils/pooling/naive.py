@@ -13,7 +13,7 @@ def maxpool2d_naive(x, pool_height, pool_width, stride=1, padding=0):
     x_pad = np.pad(
         x, ((0, 0), (0, 0), (padding, padding), (padding, padding)), mode="constant"
     )
-    out = np.zeros((N, C, H_out, W_out))
+    out = np.zeros((N, C, H_out, W_out), dtype=x.dtype)
 
     for n in range(N):
         for c in range(C):
@@ -81,7 +81,7 @@ def avgpool2d_naive(x, pool_height, pool_width, stride=1, padding=0):
     x_pad = np.pad(
         x, ((0, 0), (0, 0), (padding, padding), (padding, padding)), mode="constant"
     )
-    out = np.zeros((N, C, H_out, W_out))
+    out = np.zeros((N, C, H_out, W_out), dtype=x.dtype)
 
     for n in range(N):
         for c in range(C):

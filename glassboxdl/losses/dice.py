@@ -1,36 +1,29 @@
 from typing import Any, Union
-
 import numpy as np
 
 from glassboxdl.core.module import Module
 from glassboxdl.core.tensor import Tensor
-
+from glassboxdl.activations.softmax import Softmax # Import your Softmax!
 
 class DiceLoss(Module):
-    """
-    Computes the Sørensen-Dice coefficient loss for image segmentation tasks.
-    It measures the overlap between predictions and targets.
-
-    Formula:
-        Intersection = sum(y_pred * y_true)
-        Denominator = sum(y_pred) + sum(y_true)
-        Loss = 1 - ((2 * Intersection + smooth) / (Denominator + smooth))
-
-        We use a smooth factor (usually a tiny number like 1e-5) in both the numerator and denominator
-        to prevent dividing by zero if the true mask and prediction are both completely blank.
-    """
-
     def __init__(self, smooth: float = 1e-5):
         super().__init__()
         self.smooth = smooth
+        # Initialize the Softmax layer right in the constructor
+        self.softmax = Softmax(axis=1) 
 
     def forward(
-        self, predictions: Tensor, targets: Union[Tensor, np.ndarray], **kwargs: Any
+        self, logits: Tensor, targets: Union[Tensor, np.ndarray], **kwargs: Any
     ) -> Tensor:
-        pred_data = predictions.data
+        # 1. GRAPH LINKING: Convert raw logits to probabilities 
+        # This automatically tracks the Softmax gradients in autograd!
+        probs = self.softmax(logits)
+
+        # 2. Extract the bounded probability data
+        pred_data = probs.data
         target_data = targets.data if isinstance(targets, Tensor) else targets
 
-        # Flattening allows us to easily compute the global overlap
+        # Flatten arrays for the global overlap calculation
         p_flat = pred_data.flatten()
         t_flat = target_data.flatten()
 
@@ -42,32 +35,31 @@ class DiceLoss(Module):
         dice_coeff = (2.0 * intersection + self.smooth) / (denominator + self.smooth)
         loss_data = 1.0 - dice_coeff
 
-        out = Tensor(loss_data, _children=(predictions,))
-        out.requires_grad = predictions.requires_grad
-
-        if out.requires_grad:
-            out.grad = np.zeros_like(out.data, dtype=float)
+        # 3. GRAPH LINKING: Wrap the output and link it to `probs` (not logits)
+        out = Tensor(
+            loss_data, requires_grad=probs.requires_grad,
+            _children=(probs,)
+        )
+        
 
         def _backward():
-            if predictions.requires_grad and out.grad is not None:
-                # Apply the quotient rule for the derivative of the Dice coefficient
-                # dL/dp = - [ (2 * t_flat * (Denom + smooth)) - (2 * Intersect + smooth) ] / (Denom + smooth)^2
+            if probs.requires_grad:
+                # Apply your exact quotient rule for the Dice derivative
                 term1 = 2.0 * t_flat * (denominator + self.smooth)
                 term2 = 2.0 * intersection + self.smooth
                 denom_squared = (denominator + self.smooth) ** 2
 
                 grad_flat = -(term1 - term2) / denom_squared
 
-                # Reshape the flat gradient back to the original prediction shape
+                # Reshape back to the prediction shape
                 local_grad = grad_flat.reshape(pred_data.shape)
 
-                # Chain rule with upstream gradient
+                # Initialize or accumulate gradients on the probability tensor
                 dx = out.grad * local_grad
-
-                if predictions.grad is None:
-                    predictions.grad = dx
+                if probs.grad is None:
+                    probs.grad = dx
                 else:
-                    predictions.grad += dx
+                    probs.grad += dx
 
         out._backward = _backward
         return out

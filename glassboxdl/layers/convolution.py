@@ -90,8 +90,12 @@ class Conv2D(Module):
 
         # Wrap in a Tensor for Autograd
         out_tensor = Tensor(
-            out, requires_grad=(x.requires_grad or self.weight.requires_grad)
+            out, 
+            requires_grad=(x.requires_grad or self.weight.requires_grad),
         )
+
+        # Manually link the computational graph right after creation
+        out_tensor._prev = (x, self.weight, self.bias)
 
         # The Backward Pass Closure
         def _backward():

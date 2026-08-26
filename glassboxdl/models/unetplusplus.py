@@ -1,6 +1,7 @@
 from typing import Generator
 
 from glassboxdl.activations.sigmoid import Sigmoid
+from glassboxdl.activations.softmax import Softmax
 from glassboxdl.core.tensor import Tensor
 from glassboxdl.layers.convolution import Conv2D
 from glassboxdl.layers.pooling import MaxPool2D
